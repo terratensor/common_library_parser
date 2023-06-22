@@ -27,6 +27,12 @@ https://dbeaver.io/
 
 `cd ./common_library_parser`
 
+Скачайте последнюю версию парсера
+
+https://github.com/terratensor/book-parser/releases
+
+И сохраните её в папке с проектом ./common_library_parser
+
 Далее запустите windows docker (через меню пуск)
 
 После запуска необходимо проверить, что нет запущенных контейнеров с manticoresearch (меню containers), если есть остановить их или удалить, иначе будет конфликт доступа к портам.
@@ -53,9 +59,17 @@ https://dbeaver.io/
       POSTGRES_DB: common-library
 ```
 
-Запускаем book-parser-common.exe файл, папка по умолчанию, где должны быть размещены docx для парсинга — `process`, с помощью параметра `-o` можно указать путь нужный путь к папке, в конце пути обязательно поставить слэш:
+В папке с проектом создайте папку process и скопируйте в неё docx файлы для обработки (8480)
 
-`book-parser-common.exe -o ./militera/mt/`
+Папка по умолчанию, где должны быть размещены docx для обработки файлов — `process`, с помощью параметра `-o` можно указать любой другой путь к нужной папке, в конце пути обязательно поставить слэш
+
+Запустите book-parser-common.exe:
+
+`book-parser-common.exe` - для папки process
+
+Или запустите book-parser-common.exe:
+
+`book-parser-common.exe -o ./militera/mt/` - для другой своей папки `/militera/mt`
 
 Будет произведена обработка docx файлов и запись их в таблицы БД:
 ```
@@ -63,7 +77,7 @@ books
     id, name, filename, created_at, updated_at, deleted_at
 
 book_paragraphs
-    id, book_id, text, position, length, created_at, updated_at, deleted_at 
+    id, book_id, book_name, text, position, length, created_at, updated_at, deleted_at 
 ```
 
 Время обработки 8480 docx файлов в один поток примерно 20 минут.
@@ -99,7 +113,7 @@ POST localhost:9308/search
 
 ```
 {
-    "index": "booksearch",
+    "index": "common_library",
     "highlight": {
         "fields": [
             "text"
@@ -107,18 +121,18 @@ POST localhost:9308/search
         "limit": 0,
         "no_match_size": 0
     },
-    "limit": 100,
+    "max_matches": 353545,
+    "limit": 50,
     "offset": 0,
     "query": {
         "bool": {
             "must": [
                 {
-                    "match_phrase": { "_all" : "пфу"}
+                    "query_string": "концепция"
                 }
             ]
         }
     }
-}
 ```
 В match_phrase, вместо "концепция", можно набрать любой поисковый запрос в кавычках, например "бахмут"
 
