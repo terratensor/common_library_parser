@@ -23,15 +23,30 @@ https://dbeaver.io/
 
 `git clone https://github.com/terratensor/common_library_parser.git`
 
+Увидите сообщение в консоли об успешном клонировании:
+```
+Cloning into 'common_library_parser'...
+fatal: helper error (-1): User cancelled dialog.
+Username for 'https://github.com':
+c:\terratensor>git clone https://github.com/terratensor/common_library_parser.git
+Cloning into 'common_library_parser'...
+remote: Enumerating objects: 20, done.
+remote: Counting objects: 100% (20/20), done.
+remote: Compressing objects: 100% (15/15), done.
+Receiving objects: 100% (20/20), 6.48 KiB | 6.48 MiB/s, done.
+Resolving deltas: 100% (4/4), done.
+```
+
 После наберите в консоли Git CMD
 
 `cd ./common_library_parser`
 
-Скачайте последнюю версию парсера
+Скачайте последнюю версию парсера book-parser-common.exe.
+Ссылка на файл находится в секции Assets страницы описания релиза 
 
-https://github.com/terratensor/book-parser/releases
+https://github.com/terratensor/book-parser/releases/latest
 
-И сохраните её в папке с проектом ./common_library_parser
+Сохраните book-parser-common.exe в папке с проектом ./common_library_parser
 
 Далее запустите windows docker (через меню пуск)
 

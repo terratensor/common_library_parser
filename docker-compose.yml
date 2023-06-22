@@ -19,7 +19,7 @@ services:
     volumes:
       - manticore:/var/lib/manticore
       - manticore:/var/log/manticore
-      - ./manticore/manticore.conf:/etc/manticoresearch/manticore.conf
+      - ./docker/manticore/manticore.conf:/etc/manticoresearch/manticore.conf
 
   postgres-book-parser:
     container_name: book-parser-postgres
