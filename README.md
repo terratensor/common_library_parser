@@ -13,9 +13,9 @@ https://dbeaver.io/
 
 После установки необходимых программ, нажмите меню пуск, найдите git консоль Git CMD, запустите
 
-Выберите или создайте папку с проектами, например c:\Users<username>\projects,
+Выберите или создайте папку с проектами, например c:\projects,
 
-Для создания наберите в консоли Git CMD`mkdir ./projects`
+Для создания наберите в консоли Git CMD `mkdir ./projects`
 
 Выбрать созданную папку, набрать в консоли Git CMD: `cd ./projects`
 
@@ -55,7 +55,7 @@ https://dbeaver.io/
 
 Запускаем book-parser-common.exe файл, папка по умолчанию, где должны быть размещены docx для парсинга — `process`, с помощью параметра `-o` можно указать путь нужный путь к папке, в конце пути обязательно поставить слэш:
 
-`book-parser-pg.exe -o ./militera/mt/`
+`book-parser-common.exe -o ./militera/mt/`
 
 Будет произведена обработка docx файлов и запись их в таблицы БД:
 ```
@@ -66,9 +66,73 @@ book_paragraphs
     id, book_id, text, position, length, created_at, updated_at, deleted_at 
 ```
 
-Посмотреть данные в БД можно, например, с помощью программы DBeaver Community https://dbeaver.io/
+Время обработки 8480 docx файлов в один поток примерно 20 минут.
+
+После обработки всех файлов в консоли будет завершающее сообщение:
+
+`2023/06/22 11:11:53 all files done`
+
+Для запуска индексации данных из БД в мантикору запустите manticore indexer:
+
+`docker exec -it book-parser-manticore indexer common_library`
+
+Время обработки данных из БД (24 701 003 параграфов) примерно 8-10 минут.
+
+После того как данный будут проиндексированы необходимо перезапустить контейнеры common_library_parser, сделать это можно командами:
+
+`docker compose down`
+
+`docker compose up -d`
+
+Теперь можно запустить программу postman
+
+В программе Postman сделать вкладку и в адресе указать:
+```
+POST localhost:9308/search
+```
+![image](https://github.com/audetv/book-parser/assets/129882753/aad0a4c2-e213-46ac-a615-4ac98a8a7f82)
+
+
+Ниже выбрать Body, ниже raw, рядом JSON
+
+В поле ниже скопировать запрос:
+
+```
+{
+    "index": "booksearch",
+    "highlight": {
+        "fields": [
+            "text"
+        ],
+        "limit": 0,
+        "no_match_size": 0
+    },
+    "limit": 100,
+    "offset": 0,
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "match_phrase": { "_all" : "пфу"}
+                }
+            ]
+        }
+    }
+}
+```
+В match_phrase, вместо "концепция", можно набрать любой поисковый запрос в кавычках, например "бахмут"
+
+"limit" - кол-во записей на странице
+"offset" - смещение от начала.
+
+Если надо посмотреть следующие 100 записей, изменить offset, например:
+```
+"limit": 100
+"offset": 100
+```
 
 --------------------------
+### Дополнительные сведения:
 
 **Остановка контейнеров book-parser-common**
 
