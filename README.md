@@ -99,7 +99,7 @@ POST localhost:9308/search
 
 ```
 {
-    "index": "booksearch",
+    "index": "common_library",
     "highlight": {
         "fields": [
             "text"
@@ -107,18 +107,18 @@ POST localhost:9308/search
         "limit": 0,
         "no_match_size": 0
     },
-    "limit": 100,
+    "max_matches": 353545,
+    "limit": 50,
     "offset": 0,
     "query": {
         "bool": {
             "must": [
                 {
-                    "match_phrase": { "_all" : "пфу"}
+                    "query_string": "концепция"
                 }
             ]
         }
     }
-}
 ```
 В match_phrase, вместо "концепция", можно набрать любой поисковый запрос в кавычках, например "бахмут"
 
