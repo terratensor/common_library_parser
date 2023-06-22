@@ -116,10 +116,10 @@ book-parser-common.exe
 ```
 
 
-Или запустите book-parser-common.exe с параметром -o и укажите нужную папку, где расположены файлы для обработки, например:
+Или запустите book-parser-common.exe с параметром -o и укажите нужную папку, где расположены файлы для обработки, например, для другой своей папки `/militera/mt/`:
 
 ```
-book-parser-common.exe -o ./militera/mt/` - для другой своей папки `/militera/mt
+book-parser-common.exe -o ./militera/mt/`
 ```
 
 Будет произведена обработка docx файлов и запись их в таблицы БД:
