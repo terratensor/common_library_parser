@@ -1,6 +1,6 @@
 ### Парсер общей библиотеки docx/postgres/manticore
 
-Для запуска необходимы docker windows, git windows, postman, dbeaver
+Для работы необходимы **docker windows**, **git windows**, необязательные прораммы postman, dbeaver
 
 1. Установить Docker для Windows https://docs.docker.com/desktop/install/windows-install/
 
