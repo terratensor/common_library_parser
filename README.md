@@ -25,7 +25,7 @@ mkdir ./projects
 cd ./projects
 ```
 
-Для клонируйте репозитория terratensor/common_library_parser, наберите в консоли Git CMD:
+Для клонирования репозитория terratensor/common_library_parser, наберите в консоли Git CMD:
 
 ```
 git clone https://github.com/terratensor/common_library_parser.git
