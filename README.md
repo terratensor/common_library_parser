@@ -1,6 +1,42 @@
 ### Парсер общей библиотеки docx/postgres/manticore
 
-Для работы необходимы **docker windows**, **git windows**, необязательные прораммы postman, dbeaver
+**Минимальные требования системы 2 CPU 2Gb MEM**
+- Обязательное ПО для запуска **Docker**, **Git**
+- Необязательные программы Postman, DBEeaver, HeidiSQL
+
+Пример файла конфигурации подсмстемы wsl .wslconfig
+
+```
+# Settings apply across all Linux distros running on WSL 2
+[wsl2]
+memory=2GB 
+processors=2
+swap=2GB
+```
+
+Предполагаем, что стабильных результатов можно достичь и на системах с более низкими параметрами,
+но именно на вышеуказнной конфигурации были получены успешные результаты тестирования работы парсера docx файлов и работы indexer Manticoresearch
+
+Тест проводился на наборе docx файлов общей библиотеки
+- Количествао файлов — 7733 шт.
+- Общий размер docx файлов 3,08 Гб
+- Размер volume БД postgres после обработки файлов — 13,1 Гб
+- Размер volume поискового индекса мантикоры — 22,7 Гб
+
+Итого для теста, после установки всех необходимых программ, необходимо иметь на диске не менее 39 Гб свободного места
+
+<details><summary><b>Скриншоты тестового заапуска, состояния параметров системы</b></summary>
+<p>
+
+![2023-07-08_13-45-11](https://github.com/terratensor/common_library_parser/assets/10896447/f0ddec87-0a5e-4394-918b-9b8d11f3fb7f)
+![2023-07-08_13-45-23](https://github.com/terratensor/common_library_parser/assets/10896447/a55e7ac0-d784-4e19-99b1-49fbc6345be1)
+
+
+</p>
+</details> 
+
+
+#### Подготовка к запуску
 
 1. Установить Docker для Windows https://docs.docker.com/desktop/install/windows-install/
 
@@ -9,23 +45,24 @@
 3. Установить программу Postman https://www.postman.com/downloads/
 
 4. Установить программу DBeaver Community, необходима для просмотра данные postgres БД в графическом интерфейсе
-https://dbeaver.io/
+https://dbeaver.io/ <br>
+    Вместо DBeaver можно использовать HeidiSQL https://www.heidisql.com/ работает только на Windows
 
-После установки необходимых программ, нажмите меню пуск, найдите git консоль Git CMD, запустите
+После установки необходимых программ, нажмите меню пуск, найдите git консоль Git CMD, запустите Git CMD
 
-Выберите или создайте папку с проектами, например c:\projects,
+Выберите или создайте папку с проектами, например c:\terratensor,
 
-Для создания наберите в консоли Git CMD 
+Для создания папки наберите в Git CMD консоли:
 ```
-mkdir ./projects
-```
-
-Выбрать созданную папку, набрать в консоли Git CMD: 
-```
-cd ./projects
+mkdir ./terratensor
 ```
 
-Для клонирования репозитория terratensor/common_library_parser, наберите в консоли Git CMD:
+Выберите созданную папку, наберите в Git CMD консоли: 
+```
+cd ./terratensor
+```
+
+Для клонирования репозитория terratensor/common_library_parser, наберите в Git CMD консоли:
 
 ```
 git clone https://github.com/terratensor/common_library_parser.git
@@ -45,7 +82,7 @@ Receiving objects: 100% (20/20), 6.48 KiB | 6.48 MiB/s, done.
 Resolving deltas: 100% (4/4), done.
 ```
 
-После наберите в консоли Git CMD
+После наберите в Git CMD консоли:
 
 ```
 cd ./common_library_parser
@@ -75,7 +112,7 @@ https://github.com/terratensor/book-parser/releases/latest
 
 Сохраните book-parser-common.exe в папке с проектом ./common_library_parser
 
-Далее запустите windows docker (через меню пуск)
+Далее запустите Windows Docker (через меню пуск)
 
 После запуска необходимо проверить, что нет запущенных контейнеров с manticoresearch (меню containers), если есть остановить их или удалить, иначе будет конфликт доступа к портам.
 
@@ -105,7 +142,7 @@ docker compose up --build -d
       POSTGRES_DB: common-library
 ```
 
-Скопируйте в папку process docx файлы для обработки (8480).
+Скопируйте в папку process docx файлы для обработки (7733).
 
 Папка по умолчанию, где должны быть размещены docx для обработки файлов — `process`, с помощью параметра `-o` можно указать любой другой путь к нужной папке, в конце пути обязательно поставить слэш
 
@@ -128,7 +165,7 @@ db_pg_books
     id, name, filename, created_at, updated_at, deleted_at
 
 db_pg_paragraphs
-    id, book_id, book_name, text, position, length, created_at, updated_at, deleted_at 
+    id, uuid, book_id, book_name, text, position, length, created_at, updated_at, deleted_at 
 ```
 
 При обработке файлов в консоли после каждой успешно обработанной книги будеп появляться сообщение с наименованием и номером файла:
@@ -146,7 +183,7 @@ book-parser/common/db/sql/pgGormStore/paragraph_store.go:83 ←[33mSLOW SQL >= 2
 ```
 
 
-Время обработки 8480 docx файлов в один поток примерно 20 минут.
+Время обработки 7730 docx файлов в один поток примерно 20 минут.
 
 После обработки всех файлов в консоли будет завершающее сообщение:
 
@@ -161,7 +198,13 @@ book-parser/common/db/sql/pgGormStore/paragraph_store.go:83 ←[33mSLOW SQL >= 2
 docker exec -it book-parser-manticore indexer common_library
 ```
 
-Время обработки данных из БД (24 701 003 параграфов) примерно 8-10 минут.
+<details><summary>Время обработки данных из БД (22 726 997 параграфов) примерно 16 минут</summary>
+<p>
+
+![2023-07-08_13-42-22](https://github.com/terratensor/common_library_parser/assets/10896447/92605b09-3f98-443a-b16c-be1337a8f4c0)
+
+</p>
+</details> 
 
 После того как данный будут проиндексированы необходимо перезапустить контейнеры common_library_parser, сделать это можно командами:
 
@@ -173,7 +216,7 @@ docker compose down
 docker compose up -d
 ```
 
-Теперь можно запустить программу postman
+Для просмотра результатов можно запустить программу Postman
 
 В программе Postman сделать вкладку и в адресе указать:
 ```
